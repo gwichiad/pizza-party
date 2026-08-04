@@ -23,8 +23,10 @@ func (api *api) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+
 	r.Route("/data/", func(r chi.Router) {
-		r.Get("/temperature", api.healthCheckHandler)
+		r.Get("/{field}", api.dataHandler)
+		r.Get("/{field}/{subfield}", api.dataHandler)
 	})
 
 	return r
