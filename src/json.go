@@ -1,6 +1,10 @@
 package main
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"log"
+	"os"
+)
 
 type SatelliteResponse struct {
 	Sensor_name string `json:"sensor_name"`
@@ -19,4 +23,22 @@ type SatelliteResponse struct {
 		Sensors string `json:"sensors"`
 		Nation string `json:"nation"`
 	}
+}
+
+func readAndDecode() SatelliteResponse {
+	fileName := "data.json"
+	file, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var satelliteResponse SatelliteResponse
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&satelliteResponse); err != nil {
+		log.Fatal(err)
+	}
+
+	return satelliteResponse
+
 }
