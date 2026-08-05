@@ -26,11 +26,11 @@ func (api *api) mount() http.Handler {
 
 	r.Post("/data", api.ingestHandler)
 
-	r.Get("/satellites", api.satellitesHandler)
+	r.Get("/satellites", api.listSatellitesHandler)
 	r.Get("/satellites/{name}", api.listSpecsHandler)
 	r.Get("/satellites/log", api.listNLogsHandler)
 	r.Get("/satellites/{name}/sensors", api.listSensorsHandler)
-	r.Get("/satellites/{name}/sensors/{sensor_name}", api.sensorLogsHandler)
+	r.Get("/satellites/{name}/sensors/{sensor_name}", api.listSensorLogsHandler)
 
 	return r
 }

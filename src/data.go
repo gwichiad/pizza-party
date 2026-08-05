@@ -32,7 +32,7 @@ func (api *api) ingestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (api *api) satellitesHandler(w http.ResponseWriter, r *http.Request) {
+func (api *api) listSatellitesHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
 	defer cancel()
 
@@ -56,7 +56,7 @@ func (api *api) listSpecsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
 	defer cancel()
 
-	data, err := api.store.findLatestSpecs(ctx, name)
+	data, err := api.store.listSpecs(ctx, name)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			http.Error(w, "no specs found", http.StatusNotFound)
@@ -100,7 +100,7 @@ func (api *api) listSensorsHandler(w http.ResponseWriter, r *http.Request)  {
 	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
 	defer cancel()
 
-	data, err := api.store.findLatestSpecs(ctx, name)
+	data, err := api.store.listSpecs(ctx, name)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			http.Error(w, "no specs found", http.StatusNotFound)
@@ -113,7 +113,7 @@ func (api *api) listSensorsHandler(w http.ResponseWriter, r *http.Request)  {
 
 	writeJSON(w, http.StatusOK, SensorsResponse{Sensors: data.Sensors})
 }
-func (api *api) sensorLogsHandler(w http.ResponseWriter, r *http.Request) {
+func (api *api) listSensorLogsHandler(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
 	sensor_name := chi.URLParam(r, "sensor_name")
 
@@ -127,7 +127,7 @@ func (api *api) sensorLogsHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
 	defer cancel()
 
-	data, err := api.store.listSensorsLogs(ctx, name, sensor_name, int64(n))
+	data, err := api.store.listSensorLogs(ctx, name, sensor_name, int64(n))
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			http.Error(w, "no logs found", http.StatusNotFound)

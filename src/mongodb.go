@@ -51,7 +51,7 @@ func (store *store) listSatellites(ctx context.Context) ([]string, error) {
 	return satellites, nil
 }
 
-func (store *store) findLatestSpecs(ctx context.Context, satellite_name string) (*Specs, error) {
+func (store *store) listSpecs(ctx context.Context, satellite_name string) (*Specs, error) {
 	opts := options.FindOne().
 	SetSort(bson.D{{Key: "time", Value: -1}}).
 	SetProjection(bson.D{{Key: "specs", Value: 1}, {Key: "_id", Value: 0}})
@@ -88,7 +88,7 @@ func (store *store) listNLogs(ctx context.Context, n int64) ([]SatelliteResponse
 	}
 	return logs, nil
 }
-func (store *store) listSensorsLogs(ctx context.Context, satellite_name string, sensor_name string, n int64) ([]SatelliteResponse, error) {
+func (store *store) listSensorLogs(ctx context.Context, satellite_name string, sensor_name string, n int64) ([]SatelliteResponse, error) {
 	opts := options.Find().
 	SetSort(bson.D{{Key: "time", Value: -1}}).
 	SetLimit(n)
