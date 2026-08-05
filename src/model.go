@@ -25,3 +25,18 @@ type Specs struct {
 	Sensors []string `json:"sensors" bson:"sensors"`
 	Nation string `json:"nation" bson:"nation"`
 }
+
+/* Response Types */
+
+type SatellitesResponse struct {
+	Sattellites []string `json:"sattellites"`
+}
+type SpecsResponse struct {
+	Specs Specs `json:"specs"`
+}
+type LogsResponse struct {
+	Logs []SatelliteResponse `json:"logs"`
+}
+type SensorsResponse struct {
+	Sensors []string `json:"sensors"`
+}

@@ -32,11 +32,6 @@ func (api *api) mount() http.Handler {
 	r.Get("/satellites/{name}/sensors", api.listSensorsHandler)
 	r.Get("/satellites/{name}/sensors/{sensor_name}", api.sensorLogsHandler)
 
-	/*r.Route("/data/", func(r chi.Router) {
-		r.Get("/{field}", api.dataHandler)
-		r.Get("/{field}/{subfield}", api.dataHandler)
-	})*/
-
 	return r
 }
 

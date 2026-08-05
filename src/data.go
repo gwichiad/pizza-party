@@ -67,7 +67,7 @@ func (api *api) listSpecsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, data)
+	writeJSON(w, http.StatusOK, SpecsResponse{Specs: *data})
 }
 
 func (api *api) listNLogsHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +92,7 @@ func (api *api) listNLogsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, data)
+	writeJSON(w, http.StatusOK, LogsResponse{Logs: data})
 }
 func (api *api) listSensorsHandler(w http.ResponseWriter, r *http.Request)  {
 	name := chi.URLParam(r, "name")
@@ -111,7 +111,7 @@ func (api *api) listSensorsHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, data.Sensors)
+	writeJSON(w, http.StatusOK, SensorsResponse{Sensors: data.Sensors})
 }
 func (api *api) sensorLogsHandler(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
@@ -138,5 +138,5 @@ func (api *api) sensorLogsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusOK, data)
+	writeJSON(w, http.StatusOK, LogsResponse{Logs: data})
 }

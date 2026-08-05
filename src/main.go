@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,11 +38,19 @@ func main()  {
 		store: data,
 	}
 
-	go api.run(api.mount())
+	chErr := make(chan error, 1)
+
+	go func() {
+		chErr <- api.run(api.mount())
+	}()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-	<-stop
 
-	fmt.Println("Shutting down")
+	select {
+	case err := <-chErr:
+		log.Fatalf("server failed to start: %v", err)
+	case <-stop:
+		fmt.Println("Shutting down")
+	}
 }
