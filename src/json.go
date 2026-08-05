@@ -2,43 +2,27 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"log"
-	"os"
 )
 
-type SatelliteResponse struct {
-	Sensor_name string `json:"sensor_name"`
-	Temperature float32 `json:"temperature"`
-	Pressure float32 `json:"pressure"`
-	Position struct {
-		City string `json:"city"`
-		Height float32 `json:"height"`
-	}
-	Time string `json:"time"`
-	Info string `json:"info"`
-	Specs struct {
-		Name string `json:"name"`
-		Model string `json:"model"`
-		LaunchDate string `json:"launch_date"`
-		Sensors string `json:"sensors"`
-		Nation string `json:"nation"`
-	}
-}
+func readAndDecode(r io.Reader) (SatelliteResponse, error) {
+	var data SatelliteResponse
 
-func readAndDecode() SatelliteResponse {
-	fileName := "data.json"
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	var satelliteResponse SatelliteResponse
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&satelliteResponse); err != nil {
+	decoder := json.NewDecoder(r)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&data); err != nil {
 		log.Fatal(err)
 	}
 
-	return satelliteResponse
+	if data.Specs.Name == "" {
+		return SatelliteResponse{}, errors.New("satellite name is required")
+	}
+	if data.Time == "" {
+		return SatelliteResponse{}, errors.New("time is required")
+	}
 
+	data.SatelliteName = data.Specs.Name
+	return data, nil
 }

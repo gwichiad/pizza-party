@@ -13,6 +13,7 @@ type api struct {
 }
 type config struct {
 	addr string
+	store *store
 }
 
 func (api *api) mount() http.Handler {
@@ -23,11 +24,12 @@ func (api *api) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	r.Post("/data", api.ingestHandler)
 
-	r.Route("/data/", func(r chi.Router) {
+	/*r.Route("/data/", func(r chi.Router) {
 		r.Get("/{field}", api.dataHandler)
 		r.Get("/{field}/{subfield}", api.dataHandler)
-	})
+	})*/
 
 	return r
 }
