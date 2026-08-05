@@ -10,10 +10,10 @@ import (
 
 type api struct {
 	config config
+	store *store
 }
 type config struct {
 	addr string
-	store *store
 }
 
 func (api *api) mount() http.Handler {
@@ -25,6 +25,10 @@ func (api *api) mount() http.Handler {
 	r.Use(middleware.Recoverer)
 
 	r.Post("/data", api.ingestHandler)
+
+	r.Get("/satellites", api.satellitesHandler)
+	r.Get("/satellites/{name}", api.listSpecsHandler)
+	r.Get("/satellites/log", api.listNLogsHandler)
 
 	/*r.Route("/data/", func(r chi.Router) {
 		r.Get("/{field}", api.dataHandler)

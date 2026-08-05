@@ -10,7 +10,7 @@ type SatelliteResponse struct {
 	Temperature float32 `json:"temperature" bson:"temperature"`
 	Pressure float32 `json:"pressure" bson:"pressure"`
 	Position Position `json:"position" bson:"position"`
-	Time string `json:"time" bson:"time"`
+	Time int64 `json:"time" bson:"time"`
 	Info string `json:"info" bson:"info"`
 	Specs Specs `json:"specs" bson:"specs"`
 }
@@ -22,6 +22,6 @@ type Specs struct {
 	Name string `json:"name" bson:"name"`
 	Model string `json:"model" bson:"model"`
 	LaunchDate string `json:"launch_date" bson:"launch_date"`
-	Sensors string `json:"sensors" bson:"sensors"`
+	Sensors []string `json:"sensors" bson:"sensors"`
 	Nation string `json:"nation" bson:"nation"`
 }

@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -37,4 +39,52 @@ func newStore(client *mongo.Client) *store {
 func (store *store) insert(ctx context.Context, data SatelliteResponse) error {
 	_, err := store.collection.InsertOne(ctx, &data)
 	return err
+}
+
+func (store *store) listSatellites(ctx context.Context) ([]string, error) {
+	var satellites []string
+
+	err := store.collection.Distinct(ctx, "satellite_name", bson.D{}).Decode(&satellites)
+	if err != nil {
+		return nil, err
+	}
+	return satellites, nil
+}
+
+func (store *store) findLatestSpecs(ctx context.Context, satellite_name string) (*Specs, error) {
+	opts := options.FindOne().
+	SetSort(bson.D{{Key: "time", Value: -1}}).
+	SetProjection(bson.D{{Key: "specs", Value: 1}, {Key: "_id", Value: 0}})
+
+	var result struct {
+		Specs Specs `bson:"specs"`
+	}
+
+	err := store.collection.FindOne(ctx, bson.D{{Key: "satellite_name", Value: satellite_name}}, opts).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+	if reflect.DeepEqual(result.Specs, Specs{}) {
+		return nil, fmt.Errorf("%q has no specs in the latest log", satellite_name)
+	}
+	return &result.Specs, nil
+}
+
+func (store *store) listNLogs(ctx context.Context, n int64) ([]SatelliteResponse, error) {
+	opts := options.Find().
+	SetSort(bson.D{{Key: "time", Value: -1}}).
+	SetLimit(n)
+
+	cursor, err := store.collection.Find(ctx, bson.D{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var logs []SatelliteResponse
+
+	if err := cursor.All(ctx, &logs); err != nil {
+		return nil, err
+	}
+	return logs, nil
 }

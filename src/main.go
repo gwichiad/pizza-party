@@ -31,10 +31,10 @@ func main()  {
 
 	cfg := config{
 		addr: ":8080",
-		store: data,
 	}
 	api := api{
 		config: cfg,
+		store: data,
 	}
 
 	go api.run(api.mount())
