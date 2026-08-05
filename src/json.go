@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -14,7 +13,7 @@ func readAndDecode(r io.Reader) (SatelliteResponse, error) {
 	decoder := json.NewDecoder(r)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&data); err != nil {
-		log.Fatal(err)
+		return SatelliteResponse{}, err
 	}
 
 	if data.Specs.Name == "" {

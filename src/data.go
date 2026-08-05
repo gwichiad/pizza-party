@@ -42,6 +42,9 @@ func (api *api) satellitesHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "no satellites found", http.StatusNotFound)
 			return
 		}
+		log.Printf("find failed: %v", err)
+		http.Error(w, "failed to query data", http.StatusInternalServerError)
+		return
 	}
 
 	writeJSON(w, http.StatusOK, data)
