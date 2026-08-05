@@ -91,7 +91,7 @@ func (api *api) listNLogsHandler(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, data)
 }
-func (api *api) listSensors(w http.ResponseWriter, r *http.Request)  {
+func (api *api) listSensorsHandler(w http.ResponseWriter, r *http.Request)  {
 	name := chi.URLParam(r, "name")
 
 	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
@@ -109,4 +109,31 @@ func (api *api) listSensors(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	writeJSON(w, http.StatusOK, data.Sensors)
+}
+func (api *api) sensorLogsHandler(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+	sensor_name := chi.URLParam(r, "sensor_name")
+
+	n_str := r.URL.Query().Get("amount")
+	n, err := strconv.Atoi(n_str)
+	if err != nil {
+		http.Error(w, "amount has to be an integer", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), requestTimeout)
+	defer cancel()
+
+	data, err := api.store.listSensorsLogs(ctx, name, sensor_name, int64(n))
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			http.Error(w, "no logs found", http.StatusNotFound)
+			return
+		}
+		log.Printf("request failed: %v", err)
+		http.Error(w, "failed to query data", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, data)
 }

@@ -88,3 +88,26 @@ func (store *store) listNLogs(ctx context.Context, n int64) ([]SatelliteResponse
 	}
 	return logs, nil
 }
+func (store *store) listSensorsLogs(ctx context.Context, satellite_name string, sensor_name string, n int64) ([]SatelliteResponse, error) {
+	opts := options.Find().
+	SetSort(bson.D{{Key: "time", Value: -1}}).
+	SetLimit(n)
+
+	filter := bson.D{
+		{Key: "satellite_name", Value: satellite_name},
+		{Key: "sensor_name", Value: sensor_name},
+	}
+
+	cursor, err := store.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var logs []SatelliteResponse
+
+	if err := cursor.All(ctx, &logs); err != nil {
+		return nil, err
+	}
+	return logs, nil
+}
