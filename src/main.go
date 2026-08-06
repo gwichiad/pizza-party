@@ -29,6 +29,11 @@ func main()  {
 	}()
 
 	data := newStore(mongoClient)
+	indexCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if err := data.ensureIndexing(indexCtx); err != nil {
+		panic(err)
+	}
 
 	cfg := config{
 		addr: ":8080",

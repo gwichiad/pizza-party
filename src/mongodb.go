@@ -36,6 +36,24 @@ func newStore(client *mongo.Client) *store {
 	return &store{collection: collection}
 }
 
+func (store *store) ensureIndexing(ctx context.Context) error {
+	_, err := store.collection.Indexes().CreateMany(ctx, []mongo.IndexModel{
+		{
+			Keys: bson.D{
+				{Key: "satellite_name", Value: 1},
+				{Key: "sensor_name", Value: 1},
+				{Key: "time", Value: -1},
+			},
+		},
+		{
+			Keys: bson.D{
+				{Key: "time", Value: -1},
+			},
+		},
+	})
+	return err
+}
+
 func (store *store) insert(ctx context.Context, data SatelliteResponse) error {
 	_, err := store.collection.InsertOne(ctx, &data)
 	return err
